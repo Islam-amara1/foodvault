@@ -1,7 +1,8 @@
 # Calorie Tracker App
 
 A simple web app to **track daily calories and macros**, adjust them to your personal goals, and monitor progress with daily averages and a weekly calendar. Built with **Next.js, React, and Chart.js**.
-
+# link for the web app 
+https://foodvault-ten.vercel.app/
 ## Features
 - Add daily calorie and macronutrient entries.
 - Dashboard showing total calories and macros vs daily goals.
