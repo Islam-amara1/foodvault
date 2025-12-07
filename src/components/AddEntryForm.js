@@ -12,14 +12,14 @@ export default function AddEntryForm({ onAddEntry, selectedDate }) {
   // Default macro split: 30% protein, 40% carbs, 30% fats
   const calculateMacrosFromCalories = (cal) => {
     if (!cal || cal <= 0) return { protein: 0, carbs: 0, fats: 0 };
-    
+
     // Protein: 30% of calories = 0.3 * cal / 4 = cal * 0.075
     // Carbs: 40% of calories = 0.4 * cal / 4 = cal * 0.1
     // Fats: 30% of calories = 0.3 * cal / 9 = cal * 0.0333...
     const proteinGrams = Math.round((cal * 0.3) / 4);
     const carbsGrams = Math.round((cal * 0.4) / 4);
     const fatsGrams = Math.round((cal * 0.3) / 9);
-    
+
     return { protein: proteinGrams, carbs: carbsGrams, fats: fatsGrams };
   };
 
@@ -31,7 +31,7 @@ export default function AddEntryForm({ onAddEntry, selectedDate }) {
   // When macros change, update calories
   const handleMacroChange = (type, value) => {
     const numValue = value === '' ? 0 : parseInt(value) || 0;
-    
+
     if (type === 'protein') {
       setProtein(value);
     } else if (type === 'carbs') {
@@ -44,7 +44,7 @@ export default function AddEntryForm({ onAddEntry, selectedDate }) {
     const p = type === 'protein' ? numValue : parseInt(protein) || 0;
     const c = type === 'carbs' ? numValue : parseInt(carbs) || 0;
     const f = type === 'fats' ? numValue : parseInt(fats) || 0;
-    
+
     const calculatedCalories = calculateCaloriesFromMacros(p, c, f);
     if (calculatedCalories > 0) {
       setCalories(calculatedCalories.toString());
@@ -67,7 +67,7 @@ export default function AddEntryForm({ onAddEntry, selectedDate }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!calories || !protein || !carbs || !fats) {
       alert('Please fill in all fields');
       return;
@@ -81,13 +81,6 @@ export default function AddEntryForm({ onAddEntry, selectedDate }) {
     // Validate all values are valid numbers
     if (isNaN(cal) || isNaN(p) || isNaN(c) || isNaN(f) || cal < 0 || p < 0 || c < 0 || f < 0) {
       alert('Please enter valid positive numbers for all fields');
-      return;
-    }
-
-    // Verify macros match calories
-    const calculatedCal = calculateCaloriesFromMacros(p, c, f);
-    if (Math.abs(calculatedCal - cal) > 1) {
-      alert(`Macros don't match calories! Expected ${calculatedCal} calories from these macros.`);
       return;
     }
 
@@ -118,8 +111,8 @@ export default function AddEntryForm({ onAddEntry, selectedDate }) {
         <p className="text-sm text-gray-700 dark:text-gray-300">
           <span className="font-medium">Adding to:</span>{' '}
           <span className="text-green-700 dark:text-green-400 font-semibold">
-            {selectedDate === new Date().toISOString().split('T')[0] 
-              ? 'Today' 
+            {selectedDate === new Date().toISOString().split('T')[0]
+              ? 'Today'
               : new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </span>
         </p>

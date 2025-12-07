@@ -6,9 +6,9 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
   const today = new Date().toISOString().split('T')[0];
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [tempGoal, setTempGoal] = useState(dailyGoals.calories.toString());
-  
+
   const selectedDateEntries = entries.filter(entry => entry.date === selectedDate);
-  
+
   const selectedDateTotals = selectedDateEntries.reduce(
     (acc, entry) => ({
       calories: acc.calories + entry.calories,
@@ -19,25 +19,28 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
     { calories: 0, protein: 0, carbs: 0, fats: 0 }
   );
 
-  // Calculate weekly totals and spread missing calories
+  // Calculate weekly totals starting from Sunday
   const getWeekDates = () => {
     const dates = [];
     const today = new Date();
-    const dayOfWeek = today.getDay();
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - dayOfWeek);
-    
+    startOfWeek.setDate(today.getDate() - dayOfWeek); // Go back to Sunday
+
     for (let i = 0; i < 7; i++) {
       const date = new Date(startOfWeek);
       date.setDate(startOfWeek.getDate() + i);
-      dates.push(date.toISOString().split('T')[0]);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      dates.push(`${year}-${month}-${day}`);
     }
     return dates;
   };
 
   const weekDates = getWeekDates();
   const weekEntries = entries.filter(entry => weekDates.includes(entry.date));
-  
+
   const weeklyTotals = weekEntries.reduce(
     (acc, entry) => acc + entry.calories,
     0
@@ -47,7 +50,7 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
   const todayStr = new Date().toISOString().split('T')[0];
   const daysBeforeSelected = weekDates.filter(date => new Date(date) < new Date(selectedDate));
   const daysFromSelected = weekDates.filter(date => new Date(date) >= new Date(selectedDate) && date <= todayStr);
-  
+
   // Calculate the difference (deficit or surplus) for each day before selected date
   // Positive = deficit (under goal), Negative = surplus (over goal)
   const dayDifferences = daysBeforeSelected.map(date => {
@@ -59,17 +62,17 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
 
   // Sum all differences (deficits and surpluses)
   const totalDifference = dayDifferences.reduce((sum, diff) => sum + diff, 0);
-  
+
   // Redistribute across days from selected date onwards (including selected date)
   const spreadPerRemainingDay = daysFromSelected.length > 0 ? totalDifference / daysFromSelected.length : 0;
-  
+
   // Selected date's adjusted target (base goal + redistribution from past days)
   const selectedDateAdjustedTarget = dailyGoals.calories + spreadPerRemainingDay;
 
   // Use adjusted target if there's a redistribution, otherwise use base goal
   const effectiveDailyGoal = spreadPerRemainingDay !== 0 ? selectedDateAdjustedTarget : dailyGoals.calories;
   const remaining = Math.max(0, effectiveDailyGoal - selectedDateTotals.calories);
-  const progress = effectiveDailyGoal > 0 
+  const progress = effectiveDailyGoal > 0
     ? Math.min((selectedDateTotals.calories / effectiveDailyGoal) * 100, 100)
     : 0;
 
@@ -104,7 +107,7 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     if (dateStr === today.toISOString().split('T')[0]) {
       return 'Today';
     } else if (dateStr === yesterday.toISOString().split('T')[0]) {
@@ -183,7 +186,7 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
           ) : (
             <div>
               <div className="text-xs text-gray-500 dark:text-gray-400">Calorie Budget</div>
-              <div 
+              <div
                 className="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-700 dark:hover:text-blue-300"
                 onClick={() => setIsEditingGoal(true)}
               >
@@ -210,7 +213,7 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
         </div>
         {spreadPerRemainingDay !== 0 && (
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Adjusted target: {Math.round(selectedDateAdjustedTarget)} cal 
+            Adjusted target: {Math.round(selectedDateAdjustedTarget)} cal
             {spreadPerRemainingDay > 0 ? (
               <span>(base: {dailyGoals.calories} + spread: +{Math.round(spreadPerRemainingDay)})</span>
             ) : (

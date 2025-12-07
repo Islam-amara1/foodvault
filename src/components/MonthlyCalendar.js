@@ -11,7 +11,7 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
   const calendarData = useMemo(() => {
     const year = currentMonth.year;
     const month = currentMonth.month;
-    
+
     // Get first day of month and number of days
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
@@ -42,7 +42,8 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
 
     // Create calendar grid
     const days = [];
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     // Empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
@@ -51,8 +52,7 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
 
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const total = dailyTotals[dateStr] || 0;
       const isSelected = dateStr === selectedDate;
       const isToday = dateStr === today;
@@ -62,14 +62,14 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
       let colorClass = 'bg-gray-100 dark:bg-gray-700';
       if (total > 0) {
         const percentage = (total / dailyGoals.calories) * 100;
-        if (percentage >= 100) {
+        if (percentage > 100) {
           colorClass = 'bg-red-500 dark:bg-red-600';
         } else if (percentage >= 75) {
-          colorClass = 'bg-yellow-500 dark:bg-yellow-600';
+          colorClass = 'bg-green-500 dark:bg-green-600';
         } else if (percentage >= 50) {
-          colorClass = 'bg-green-400 dark:bg-green-500';
-        } else {
           colorClass = 'bg-green-300 dark:bg-green-400';
+        } else {
+          colorClass = 'bg-yellow-400 dark:bg-yellow-400';
         }
       }
 
@@ -98,7 +98,7 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
     setCurrentMonth(prev => {
       let newMonth = prev.month + direction;
       let newYear = prev.year;
-      
+
       if (newMonth < 0) {
         newMonth = 11;
         newYear--;
@@ -106,7 +106,7 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
         newMonth = 0;
         newYear++;
       }
-      
+
       return { year: newYear, month: newMonth };
     });
   };
@@ -114,7 +114,10 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
   const goToToday = () => {
     const today = new Date();
     setCurrentMonth({ year: today.getFullYear(), month: today.getMonth() });
-    onDateChange(today.toISOString().split('T')[0]);
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    onDateChange(`${year}-${month}-${day}`);
   };
 
   return (
@@ -176,14 +179,14 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
               className={`
                 aspect-square p-1 rounded-lg text-xs transition-all
                 ${dayData.colorClass}
-                ${dayData.isSelected 
-                  ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-gray-800' 
+                ${dayData.isSelected
+                  ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-gray-800'
                   : ''}
-                ${dayData.isToday 
-                  ? 'font-bold border-2 border-gray-800 dark:border-gray-200' 
+                ${dayData.isToday
+                  ? 'font-bold border-2 border-gray-800 dark:border-gray-200'
                   : ''}
-                ${!dayData.isPast && !dayData.isToday 
-                  ? 'opacity-50 cursor-not-allowed' 
+                ${!dayData.isPast && !dayData.isToday
+                  ? 'opacity-50 cursor-not-allowed'
                   : 'cursor-pointer hover:opacity-80'}
               `}
               title={`${dayData.date}: ${dayData.total} calories`}
@@ -210,15 +213,15 @@ export default function MonthlyCalendar({ entries, selectedDate, onDateChange, d
           <span>No data</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-green-300 dark:bg-green-400 rounded"></div>
+          <div className="w-3 h-3 bg-yellow-400 dark:bg-yellow-400 rounded"></div>
           <span>&lt;50%</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-green-400 dark:bg-green-500 rounded"></div>
+          <div className="w-3 h-3 bg-green-300 dark:bg-green-400 rounded"></div>
           <span>50-75%</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-yellow-500 dark:bg-yellow-600 rounded"></div>
+          <div className="w-3 h-3 bg-green-500 dark:bg-green-600 rounded"></div>
           <span>75-100%</span>
         </div>
         <div className="flex items-center gap-1">

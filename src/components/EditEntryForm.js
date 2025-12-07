@@ -15,7 +15,7 @@ export default function EditEntryForm({ entry, onSave, onCancel }) {
 
   const handleMacroChange = (type, value) => {
     const numValue = value === '' ? 0 : parseInt(value) || 0;
-    
+
     if (type === 'protein') {
       setProtein(value);
     } else if (type === 'carbs') {
@@ -27,7 +27,7 @@ export default function EditEntryForm({ entry, onSave, onCancel }) {
     const p = type === 'protein' ? numValue : parseInt(protein) || 0;
     const c = type === 'carbs' ? numValue : parseInt(carbs) || 0;
     const f = type === 'fats' ? numValue : parseInt(fats) || 0;
-    
+
     const calculatedCalories = calculateCaloriesFromMacros(p, c, f);
     if (calculatedCalories > 0) {
       setCalories(calculatedCalories.toString());
@@ -49,7 +49,7 @@ export default function EditEntryForm({ entry, onSave, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const cal = parseInt(calories);
     const p = parseInt(protein);
     const c = parseInt(carbs);
@@ -57,12 +57,6 @@ export default function EditEntryForm({ entry, onSave, onCancel }) {
 
     if (isNaN(cal) || isNaN(p) || isNaN(c) || isNaN(f) || cal < 0 || p < 0 || c < 0 || f < 0) {
       alert('Please enter valid positive numbers for all fields');
-      return;
-    }
-
-    const calculatedCal = calculateCaloriesFromMacros(p, c, f);
-    if (Math.abs(calculatedCal - cal) > 1) {
-      alert(`Macros don't match calories! Expected ${calculatedCal} calories from these macros.`);
       return;
     }
 
