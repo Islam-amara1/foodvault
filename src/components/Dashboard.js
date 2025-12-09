@@ -49,7 +49,7 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
   // Calculate calorie differences from days before selected date and redistribute
   const todayStr = new Date().toISOString().split('T')[0];
   const daysBeforeSelected = weekDates.filter(date => new Date(date) < new Date(selectedDate));
-  const daysFromSelected = weekDates.filter(date => new Date(date) >= new Date(selectedDate) && date <= todayStr);
+  const daysFromSelected = weekDates.filter(date => new Date(date) >= new Date(selectedDate));
 
   // Calculate the difference (deficit or surplus) for each day before selected date
   // Positive = deficit (under goal), Negative = surplus (over goal)
