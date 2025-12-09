@@ -21,7 +21,7 @@ export default function AddEntryForm({ onAddEntry, selectedDate }) {
     const fatsGrams = Math.round((cal * 0.3) / 9);
 
     return { protein: proteinGrams, carbs: carbsGrams, fats: fatsGrams };
-  };
+  }; 
 
   // Calculate calories from macros: protein*4 + carbs*4 + fats*9
   const calculateCaloriesFromMacros = (p, c, f) => {
