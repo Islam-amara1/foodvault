@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState } from 'react'; 
+import { motion } from 'framer-motion';
 
 export default function AddEntryForm({ onAddEntry, selectedDate }) {
   const [calories, setCalories] = useState('');
@@ -200,12 +201,24 @@ export default function AddEntryForm({ onAddEntry, selectedDate }) {
         <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-2 rounded">
           <strong>Formula:</strong> Calories = (Protein × 4) + (Carbs × 4) + (Fats × 9)
         </div>
-        <button
+        <div className="flex justify-center pt-4">
+        <motion.button
           type="submit"
-          className="w-full bg-green-600 dark:bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors font-medium"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 500, damping: 20 }}
+          className="
+          px-6 py-3
+          bg-green-600 
+          text-white
+          font-semibold
+          rounded-xl 
+          shadow-md
+          "
         >
           Add Entry
-        </button>
+        </motion.button>
+        </div>
       </form>
     </div>
   );
