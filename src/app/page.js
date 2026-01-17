@@ -105,6 +105,50 @@ export default function Home() {
     setWeeklyCalorieGoal(newGoal * 7);
   };
 
+  // Calculate streaks
+  const calculateStreaks = (entries) => {
+    if (!entries || entries.length === 0) return { current: 0, longest: 0 };
+
+    // Get unique dates with entries, sorted descending (most recent first)
+    const uniqueDates = [...new Set(entries.map(entry => entry.date))].sort((a, b) => new Date(b) - new Date(a));
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    // Calculate current streak (from today backwards)
+    const today = new Date().toISOString().split('T')[0];
+    let checkDate = new Date(today);
+
+    while (true) {
+      const dateStr = checkDate.toISOString().split('T')[0];
+      if (uniqueDates.includes(dateStr)) {
+        currentStreak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    // Calculate longest streak
+    for (let i = 0; i < uniqueDates.length; i++) {
+      const currentDate = new Date(uniqueDates[i]);
+      const nextDate = i < uniqueDates.length - 1 ? new Date(uniqueDates[i + 1]) : null;
+
+      if (nextDate && (currentDate - nextDate) / (1000 * 60 * 60 * 24) === 1) {
+        tempStreak++;
+      } else {
+        tempStreak++;
+        longestStreak = Math.max(longestStreak, tempStreak);
+        tempStreak = 0;
+      }
+    }
+
+    return { current: currentStreak, longest: longestStreak };
+  };
+
+  const streaks = calculateStreaks(entries);
+
   const dailyGoals = {
     calories: dailyCalorieGoal,
     weekly: weeklyCalorieGoal,
@@ -136,6 +180,7 @@ export default function Home() {
             onUpdateDailyGoal={handleUpdateDailyGoal}
             selectedDate={selectedDate}
             onDateChange={setSelectedDate}
+            streaks={streaks}
           />
         )}
 
