@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Streaks from './Streaks';
+import { motion } from 'framer-motion';
 
-export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, selectedDate, onDateChange }) {
+export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, selectedDate, onDateChange, streaks }) {
   const today = new Date().toISOString().split('T')[0];
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [tempGoal, setTempGoal] = useState(dailyGoals.calories.toString());
@@ -153,6 +155,8 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
         </button>
       </div>
 
+      <Streaks streaks={streaks} entries={entries} />
+
       <div className="flex justify-between items-center mb-4">
         <div className="text-xs text-gray-500 dark:text-gray-400">Daily</div>
         <div className="text-right">
@@ -226,7 +230,14 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
       {/* Center - Apple Progress Ring */}
       <div className="flex justify-center items-center">
         <div className="relative w-[180px] h-[180px]">
-          <svg className="transform -rotate-90 absolute inset-0" width="180" height="180">
+          <motion.svg
+            className="transform -rotate-90 absolute inset-0"
+            width="180"
+            height="180"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             {/* Background circle */}
             <circle
               cx="90"
@@ -237,7 +248,7 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
               strokeWidth="14"
             />
             {/* Progress circle */}
-            <circle
+            <motion.circle
               cx="90"
               cy="90"
               r={radius}
@@ -245,11 +256,12 @@ export default function Dashboard({ entries, dailyGoals, onUpdateDailyGoal, sele
               stroke="#22c55e"
               strokeWidth="14"
               strokeDasharray={circumference}
-              strokeDashoffset={offset}
               strokeLinecap="round"
-              className="transition-all duration-300"
+              initial={{ strokeDashoffset: circumference }}
+              animate={{ strokeDashoffset: offset }}
+              transition={{ duration: 1, delay: 0.8 }}
             />
-          </svg>
+          </motion.svg>
           {/* Apple shape overlay */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="text-3xl font-bold text-green-600 dark:text-green-400">
